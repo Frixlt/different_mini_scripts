@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Card with Image Carousel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --card-background: #ffffff;
+            --card-text: #343a40;
+            --primary-color: #007bff;
+            --border-color: #dee2e6;
+            --discount-bg: #dc3545;
+            --rating-bg: #28a745;
+            --rating-text: #ffffff;
+            --indicator-active: rgb(0, 0, 0);
+            --indicator-inactive: rgba(255, 255, 255, 0.5);
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            font-family: sans-serif;
+            margin: 0;
+        }
+
+        .product-card {
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background-color: var(--card-background);
+            display: flex;
+            flex-direction: column;
+            width: 320px;
+            overflow: hidden;
+            margin: 10px;
+
+            &:hover {
+                border-color: var(--primary-color);
+            }
+
+            .card-img-container {
+                position: relative;
+                padding-top: 100%;
+                overflow: hidden;
+                border-top-left-radius: 0.5rem;
+                border-top-right-radius: 0.5rem;
+                cursor: pointer;
+
+                .hover-area {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: transparent;
+                    z-index: 20;
+                }
+
+                .image-track {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        object-position: center;
+                        user-select: none;
+                        pointer-events: none;
+                        flex-shrink: 0;
+                    }
+                }
+
+                .carousel-indicators {
+                    position: absolute;
+                    right: 0;
+                    left: 0;
+                    bottom: 0;
+                    z-index: 15;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    padding-left: 0;
+                    margin-right: 0;
+                    margin-left: 0;
+                    list-style: none;
+                    margin-bottom: 0;
+                    padding-bottom: 0px;
+                    padding-top: 0;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: opacity 0.1s ease-in-out;
+
+                    .indicator {
+                        box-sizing: content-box;
+                        flex: 1;
+                        width: auto;
+                        height: 2px;
+                        margin-right: 0;
+                        margin-left: 0;
+                        text-indent: -999px;
+                        cursor: pointer;
+                        background-color: var(--indicator-inactive);
+                        background-clip: padding-box;
+                        border-top: 0;
+                        border-bottom: 0;
+                        opacity: 1;
+                        transition: opacity .6s ease;
+                        position: relative;
+
+                        &.active {
+                            opacity: 0.7;
+                        }
+                    }
+
+                    .carousel-indicator-slider {
+                        position: absolute;
+                        top: 0;
+                        bottom: auto;
+                        height: 2px;
+                        width: 0;
+                        background-color: var(--indicator-active);
+                        left: 0;
+                        right: auto;
+                        z-index: -1;
+                        margin-left: 0;
+                        transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+                    }
+                }
+
+
+                &:hover .carousel-indicators {
+                    opacity: 1;
+                    visibility: visible;
+                }
+
+                &:hover #slideIndex {
+                    opacity: 1;
+                }
+
+                #slideIndex {
+                    position: absolute;
+                    bottom: 0px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background-color: rgba(0, 0, 0, 0.7);
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    font-size: 0.8rem;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    pointer-events: none;
+                    z-index: 21;
+                }
+            }
+
+            .card-body {
+                padding: 1rem;
+
+                .card-title {
+                    color: var(--card-text);
+                    font-size: 1.2rem;
+                    margin-bottom: 0.5rem;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .card-text {
+                    color: var(--card-text);
+                    font-size: 0.9rem;
+                    overflow: hidden;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    margin-bottom: 0.75rem;
+                    line-height: 1.4;
+                }
+            }
+
+
+            .card-footer {
+                background-color: transparent;
+                border-top: none;
+                padding: 1rem;
+
+                .price {
+                    color: var(--primary-color);
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                }
+
+                .btn-cart {
+                    padding: 0.6rem 1rem;
+                    font-size: 0.9rem;
+                    position: relative;
+                    /* For positioning icons */
+                    overflow: hidden;
+                    /* Clip any overflowing content */
+                }
+
+                .btn-cart-icon {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    transition: opacity 0.2s ease-in-out;
+                }
+
+                .btn-cart-icon.bi-cart-check-fill {
+                    opacity: 0;
+                }
+
+                /* При добавлении класса .checked к кнопке */
+                .btn-cart.checked .bi-cart-plus {
+                    opacity: 0;
+                }
+
+                .btn-cart.checked .bi-cart-check-fill {
+                    opacity: 1;
+                }
+            }
+        }
+
+
+        .discount-badge,
+        .rating-badge {
+            position: absolute;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 0.3rem;
+            z-index: 10;
+        }
+
+        .discount-badge {
+            top: 10px;
+            right: 10px;
+            background-color: var(--discount-bg);
+            color: white;
+        }
+
+        .rating-badge {
+            bottom: 10px;
+            left: 10px;
+            background-color: var(--rating-bg);
+            color: var(--rating-text);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+
+            i {
+                font-size: 0.8rem;
+            }
+        }
+
+
+        .carousel-control {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="product-card" data-product-id="1">
+        <a href="#" class="text-decoration-none">
+            <div class="card-img-container">
+                <div class="hover-area"></div>
+                <div class="image-track">
+                    <img src="https://dummyimage.com/600x600/aaaaaa/000000&text=Image+1" alt="Изображение товара 1">
+                    <img src="https://dummyimage.com/600x600/aaaaaa/000000&text=Image+2" alt="Изображение товара 2">
+                    <img src="https://dummyimage.com/600x600/aaaaaa/000000&text=Image+3" alt="Изображение товара 3">
+                    <img src="https://dummyimage.com/600x600/aaaaaa/000000&text=Image+4" alt="Изображение товара 4">
+                    <img src="https://dummyimage.com/600x600/666666/ffffff&text=Image+5" alt="Изображение товара 5">
+                    <img src="https://dummyimage.com/600x600/888888/ffffff&text=Image+6" alt="Изображение товара 6">
+                    <img src="https://dummyimage.com/600x600/aaaaaa/000000&text=Image+7" alt="Изображение товара 7">
+                </div>
+                <div class="carousel-indicators">
+                    <div class="carousel-indicator-slider"></div>
+                    <div class="indicator active" data-slide="0"></div>
+                    <div class="indicator" data-slide="1"></div>
+                    <div class="indicator" data-slide="2"></div>
+                    <div class="indicator" data-slide="3"></div>
+                    <div class="indicator" data-slide="4"></div>
+                    <div class="indicator" data-slide="5"></div>
+                    <div class="indicator" data-slide="6"></div>
+                </div>
+                <span class="discount-badge">-12%</span>
+                <span class="rating-badge">
+                    4.6 <i class="bi bi-star-fill"></i>
+                </span>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Клубника</h5>
+                <p class="card-text">Свежая клубника, ароматная и сладкая. Отлично подходит для десертов и завтраков.
+                </p>
+            </div>
+        </a>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="price">349 ₽</span>
+                <button class="btn btn-primary btn-sm btn-cart">
+                    <i class="bi bi-cart-plus btn-cart-icon"></i>
+                    <i class="bi bi-cart-check-fill btn-cart-icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-card" data-product-id="2">
+        <a href="#" class="text-decoration-none">
+            <div class="card-img-container">
+                <div class="hover-area"></div>
+                <div class="image-track">
+                    <img src="https://dummyimage.com/600x600/cccccc/000000&text=Another+Image+1"
+                        alt="Изображение товара 1">
+                    <img src="https://dummyimage.com/600x600/cccccc/000000&text=Another+Image+2"
+                        alt="Изображение товара 2">
+                    <img src="https://dummyimage.com/600x600/cccccc/000000&text=Another+Image+3"
+                        alt="Изображение товара 3">
+                </div>
+                <div class="carousel-indicators">
+                    <div class="carousel-indicator-slider"></div>
+                    <div class="indicator active" data-slide="0"></div>
+                    <div class="indicator" data-slide="1"></div>
+                    <div class="indicator" data-slide="2"></div>
+                </div>
+                <span class="discount-badge">-15%</span>
+                <span class="rating-badge">
+                    4.2 <i class="bi bi-star-fill"></i>
+                </span>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Яблоки</h5>
+                <p class="card-text">Свежие яблоки, сочные и хрустящие. Идеальны для перекуса и приготовления пирогов.
+                </p>
+            </div>
+        </a>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="price">199 ₽</span>
+                <button class="btn btn-primary btn-sm btn-cart">
+                    <i class="bi bi-cart-plus btn-cart-icon"></i>
+                    <i class="bi bi-cart-check-fill btn-cart-icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        class ProductCardCarousel {
+            constructor(cardElement) {
+                this.card = cardElement;
+                this.cardImgContainer = this.card.querySelector('.card-img-container');
+                this.hoverArea = this.card.querySelector('.card-img-container .hover-area');
+                this.imageTrack = this.card.querySelector('.card-img-container .image-track');
+                this.images = this.imageTrack.querySelectorAll('img');
+                this.indicators = this.card.querySelectorAll('.card-img-container .carousel-indicators .indicator');
+                this.indicatorSlider = this.card.querySelector('.card-img-container .carousel-indicators .carousel-indicator-slider');
+                this.slideCount = this.images.length;
+                this.imageWidth = 0;
+            }
+
+            init() {
+                this.imageTrack.style.width = `${this.slideCount * 100}%`;
+                this.images.forEach(img => img.style.width = `${100 / this.slideCount}%`);
+                this.attachEventListeners();
+                this.updateCarousel(0);
+            }
+
+            updateCarousel(slideIndex) {
+                if (slideIndex < 0) {
+                    slideIndex = 0;
+                } else if (slideIndex >= this.slideCount) {
+                    slideIndex = this.slideCount - 1;
+                }
+
+                this.imageTrack.style.transform = `translateX(-${slideIndex * (100 / this.slideCount)}%)`;
+
+                this.indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === slideIndex);
+                });
+
+                const sliderWidth = this.cardImgContainer.offsetWidth / this.slideCount;
+                this.indicatorSlider.style.width = `${sliderWidth}px`;
+                this.indicatorSlider.style.transform = `translateX(${slideIndex * sliderWidth}px)`;
+            }
+
+            attachEventListeners() {
+                this.hoverArea.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.hoverArea.addEventListener('mouseleave', () => this.handleMouseLeave());
+                window.addEventListener('resize', () => this.handleResize());
+                this.indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => this.handleIndicatorClick(index));
+                });
+            }
+
+            handleMouseMove(e) {
+                const containerWidth = this.cardImgContainer.offsetWidth;
+                const sectionWidth = containerWidth / this.slideCount;
+                const mouseX = e.offsetX;
+                let sectionIndex = Math.floor(mouseX / sectionWidth);
+                let actualSlideIndex = (sectionIndex + this.slideCount) % this.slideCount;
+                if (actualSlideIndex >= 0 && actualSlideIndex < this.slideCount) {
+                    this.updateCarousel(actualSlideIndex);
+                }
+            }
+
+            handleMouseLeave() {
+                this.updateCarousel(0);
+            }
+
+            handleResize() {
+                this.imageWidth = this.cardImgContainer.offsetWidth;
+                this.updateCarousel(0);
+            }
+
+            handleIndicatorClick(index) {
+                this.updateCarousel(index);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                const carousel = new ProductCardCarousel(card);
+                carousel.init();
+            });
+
+            // Cart button functionality - Add this part to your script
+            const cartButtons = document.querySelectorAll('.btn-cart');
+
+            cartButtons.forEach(cartButton => {
+                cartButton.addEventListener('click', function () {
+                    cartButton.classList.toggle('checked');
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
